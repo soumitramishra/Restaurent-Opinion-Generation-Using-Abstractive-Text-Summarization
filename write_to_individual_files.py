@@ -18,18 +18,21 @@ def write_to_file(i):
     dt = combine_data.loc[combine_data['business_id'] == i]
     dt.drop(dt.columns[0], axis = 1, inplace= True)
     text = dt['text'].values
+    max_sent = []
     for t in text:
         sents = sent_tokenize(t)
-        sents = [s+' <eos> ' for s in sents]
-    text = ''.join(sents)
+        sents = [s+' <eos>' for s in sents]
+        max_sent.extend(sents)
+        
+    text = ' '.join(max_sent)
     res_name = ''.join(set(dt['name']))+'_'+i
     
     with open (path+'\\reviews\\'+res_name+'.txt','w',encoding = 'utf-8') as f:
-         f.write(text)
+            f.write(text)
     
     return('')
 
 
 for ids in bis_id:
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    with ThreadPoolExecutor(max_workers=3) as executor:
         executor.submit(write_to_file, ids)
