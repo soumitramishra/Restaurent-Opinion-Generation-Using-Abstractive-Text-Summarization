@@ -23,11 +23,13 @@ def generate_ngrams(s, n):
     # Convert to lowercases
     s = s.lower()
     s = s.strip()
+    #s = re.sub('\d', '', s)
     # Replace all none alphanumeric characters with spaces
     s = re.sub(r'[^a-zA-Z0-9\s]', ' ', s)
     # Break sentence in the token, remove empty tokens
     tokens = [token for token in s.split(" ") if token != ""]
     tokens = [word for word in tokens if word not in stopwords.words('english')]
+    tokens = [word for word in tokens if word.isalpha()]
     # Use the zip function to help us generate n-grams
     # Concatentate the tokens into ngrams and return
     ngrams = zip(*[tokens[i:] for i in range(n)])
@@ -36,7 +38,7 @@ def generate_ngrams(s, n):
     if n==1:                
         ngrams = {k:v for k, v in ngrams.items() if v > 1 }
         med = median(ngrams.values())
-        ngrams = {k:v for k, v in ngrams.items() if v > med }
+        ngrams = {k:v for k, v in ngrams.items() if v >= med }
         
     return ngrams
 
@@ -65,18 +67,26 @@ def generate_scored_ngrams(seed):
             if s != s2:
                 if s[1] == s2[0]:
                     val = tuple(set(s+s2))
-                    new_dict[val] = readability.getmeasures(val, lang='en')['readability grades']['FleschReadingEase']
+                    tx = ''
+                    for i in val:
+                        tx = tx+' '+i
+                      #  print(tx)
+                    new_dict[val] = readability.getmeasures(tx.strip(), lang='en')['readability grades']['FleschReadingEase']
     
     return new_dict
 
 def prob(ngram):
     '''
+    Calculate Probability
     '''
     n = len(ngram)
     new_dict = {k:v/n for k,v in ngram.items()}
     return new_dict
 
 def pmi(x,y):
+    '''
+    Calculate PMI
+    '''
     val = 0
     if x+' '+y in list(bigram_prob.keys()):
         val  = log((bigram_prob[x+' '+y]*bigrams[x+' '+y])/(unigram_prob[x]*unigram_prob[y]))
@@ -84,7 +94,9 @@ def pmi(x,y):
 
 
 def representativeness(ngram):
-    
+    '''
+    Calculate representativeness
+    '''
     window = floor(len(ngram)/2)
     s_rep = []
     for n,gram in enumerate(ngram):
@@ -96,7 +108,8 @@ def representativeness(ngram):
     
     return mean(s_rep)
 
-data = get_data('Four Peaks Brewing_JzOp695tclcNCNMuBl7oxA.txt')
+#data = get_data('Four Peaks Brewing_JzOp695tclcNCNMuBl7oxA.txt')
+data = get_data("Madison Marriott West_yFKNTMyCQZ92M91A_yavhw.txt")
 unig = generate_ngrams(data, 1)
 bigrams = generate_ngrams(data,2)
 
@@ -118,7 +131,32 @@ with open('scores.txt','w') as f:
         print(str(k)+' '+str(v), file = f)
 
 
-rep_dict= {}
-for ngram in tqdm(scores.keys()):
-    rep_dict[ngram] = representativeness(ngram)
-    
+#rep_dict= {}
+#for ngram in tqdm(scores.keys()):
+#    rep_dict[ngram] = representativeness(ngram)
+#    with open('rep.txt','a+') as f:
+#        print(str(ngram)+' '+str(rep_dict[ngram]), file = f)
+
+futures_list = []
+from concurrent.futures.thread import ThreadPoolExecutor
+with ThreadPoolExecutor(max_workers=12) as executor:
+    for arg in scores.keys():
+        futures_list.append((executor.submit(representativeness, arg),arg)) 
+
+with open('rep.txt','w', newline = '', encoding = 'utf-8') as f:
+                     for futures in tqdm(futures_list):
+                         res = futures[0].result()
+                         print(str(futures[1])+' '+str(res), file = f)
+                         
+srep = {i[1]:i[0].result() for i in futures_list}                         
+srep_thresh = 0.7
+read_thresh =120
+srep_new = {k:v for k,v in srep.items() if v >= srep_thresh}
+score_new = {k:v for k,v in scores.items() if v>read_thresh}
+# k in list(srep_new.keys()) k in list(srep_new.keys())
+t = sorted(scores.items(), key=lambda x:-x[1])[:20]
+t1 = sorted(srep.items(), key=lambda x:-x[1])[:20]
+#def generate_candidates(seed, candidate, srd_th, srp_th):
+#    if
+#    
+#    return
