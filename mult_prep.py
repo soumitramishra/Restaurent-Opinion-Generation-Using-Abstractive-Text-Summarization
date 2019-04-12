@@ -50,7 +50,7 @@ def preprocess(line, t = 0):
     else:
         if ob['business_id'] in bis_id:
             for k, v in ob.items():
-                if k in ['business_id', 'stars', 'text']:
+                if k in ['business_id', 'stars', 'text','useful','funny','cool']:
                     df_l.append(v)
     return(df_l)
 
@@ -65,7 +65,7 @@ bis_id = list(set(new_rest['business_id']))
 prep_json('yelp_academic_dataset_review.json',1)
 
 ####### Get some summary statsitics of the review ###########
-new_data = pd.read_csv('processed_review.txt',names =['business_id', 'stars', 'text'],sep=',')
+new_data = pd.read_csv('processed_review.txt',names =['business_id', 'stars','useful','funny','cool', 'text'],sep=',')
 stats = new_data.groupby('business_id').agg('count')
 stats.to_csv('summary_stats.csv', encoding = 'utf-8')
 
