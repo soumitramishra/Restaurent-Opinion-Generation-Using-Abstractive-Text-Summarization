@@ -26,11 +26,16 @@ def parsetext(dire,category,filename):
     with open("%s\\%s"%(dire+category,filename),'r',encoding="Latin-1") as readin:
         print("file read successfully")
         text=readin.read()
-    return text.lower()
+    return text.lower().replace('<eos>','')
+
 
 def cleantext(text):
-    text=re.sub('\d','#',text)    
+    text = re.sub('\d','#',text)
+    text = ''.join(text.splitlines())
+    text = ' '.join(text.split())
     return text.split('summary:')
+
+
 
 filenames=load_data(datasets['reviews'],data_categories[0])
 
