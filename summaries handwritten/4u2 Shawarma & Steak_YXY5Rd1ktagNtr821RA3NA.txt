@@ -1,0 +1,4 @@
+The food is good, should have the option to order xtra hummus on Skip the Dishes though. <eos> The place is very clean and quite. <eos> The owner is a true gentleman. <eos> I ordered two chicken shawarmas. <eos> I am very happy with the customer service and food. <eos> Best wishes for their future endeavor. <eos> This place is my little secret. <eos> The reason for me is, this place makes a great Donair! <eos> Yes, amazing. <eos> All fresh and delicious! <eos>
+
+
+Summary: Good food, great service, clean and quite place. Must try Chicken Shawarmas.

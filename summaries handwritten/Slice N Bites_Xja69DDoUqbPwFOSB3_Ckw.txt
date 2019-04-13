@@ -1,0 +1,4 @@
+The pizza and french onion soup are amazing, the soup is so cheesy and always taste fresh. <eos> Awesome kosher pizza store!!!! <eos> Their pizza is phenomenal. <eos> Great sushi too!!! <eos> They are on uber eats. <eos> Amazing tasty Pizza great service and good prices best pizza in town will come back thanks!! <eos> ! <eos>
+
+
+Summary: Awesome fresh cheesy pizza with great service.
