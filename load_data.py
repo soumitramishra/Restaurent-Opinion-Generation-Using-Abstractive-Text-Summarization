@@ -2,12 +2,11 @@
 """
 Created on Sat Apr 13 11:26:38 2019
 
-@author: sumed
+@author: sumedh
 """
 
 import os
 import re
-
 
 path = os.getcwd()
 reviews = path+'\\summaries handwritten\\'
@@ -31,12 +30,13 @@ def parsetext(dire,category,filename):
 
 def cleantext(text):
     text=re.sub('\d','#',text)    
-    return text.split('summary: ')
+    return text.split('summary:')
 
-filenames=load_data(datasets["summaries"],data_categories[0])
+filenames=load_data(datasets['reviews'],data_categories[0])
 
 for f in filenames:
-    dat = cleantext(parsetext(f))
+    dat = cleantext(parsetext(datasets['reviews'], data_categories[0], '%s' %f))
+    print(str(len(dat))+'----'+f)
     data['review'].append(dat[0])
     data['summaries'].append(dat[1])
     
