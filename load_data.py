@@ -18,7 +18,7 @@ def load_data(dire,category):
 def parsetext(dire,category,filename):
     with open("%s\\%s"%(dire+category,filename),'r',encoding="Latin-1") as readin:
        text=readin.read()
-    return text.lower().replace('<eos>','')
+    return text.lower()
 
 
 def cleantext(text):
