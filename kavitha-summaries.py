@@ -55,10 +55,6 @@ def get_ngram_containing(unigram,bigram):
             new_dict[k] = v
     return new_dict
 
-#def ngram_tuple(ngram):
-#    return [(k.split(' ')[0],k.split(' ')[1]) for k,v in ngram.items()]
-
-
 def generate_scored_ngrams(seed):
     '''
     '''
@@ -118,36 +114,47 @@ def generate_seed_bigrams(unigrams):
         bigrams.append(o)
     return bigrams
 
-data = get_data('D:\\CCIS\\NLP_LuWang\\NLP project\\reviews\\Four Peaks Brewing.txt')
+
+path = 'D:\\Northeastern_University\\CS6120\\Project\\preped'
+
+import glob
+files = glob.glob(path+'\\*')
+data = get_data(files[0])
 #ata = get_data("Rajkapuri's Paan & Snacks_gFUSJwVzEDERbaU9FVKfRA.txt")
 unig = generate_ngrams(data, 1)
-uni_gram = Counter(unig).most_common(30)
-x = {i[0]:i[1] for i in uni_gram}
-bigrams = generate_seed_bigrams(x)
-bigrams = [' '.join(tup) for tup in bigrams]
+#uni_gram = Counter(unig).most_common(30)
+#x = {i[0]:i[1] for i in uni_gram}
+#bigrams = generate_seed_bigrams(x)
+#bigrams = [' '.join(tup) for tup in bigrams]
+#bigrams = Counter(bigrams)
 
-bigrams = Counter(bigrams)
+
+bigrams = generate_ngrams(data,2)
+uni = list(unig.keys())
+seed_dict = {}	
+for bi,v in bigrams.items():	
+    b = bi.split(' ')	
+    if b[0] in uni and b[1] in uni:	
+        seed_dict[bi] = v
 
 uni = list(unig.keys())
 d = get_ngram_containing(unig,seed_dict)
-#bigram_tup = ngram_tuple(d)
-#scores = generate_scored_ngrams(list(d.keys()))
 unigram_prob = prob(unig)
 bigram_prob = prob(seed_dict)
     
 candidate = {}
-    
-top500 = bigrams.most_common(1000)
-
 def forallseeds(bigrams):
     top500 = bigrams.most_common(500)
     clist = [i[0] for i in top500]
     for bg in tqdm(clist):
-        generate_candidates(bg,0,-1,clist)
+        generate_candidates(bg,0.1,5,clist)
     
     return 
 
 def generate_candidates(bg, rd_th, rp_th, clist):
+    '''
+    recurse me baby
+    '''
     candidate[bg] = {'rd':0, 'rp':0}
     candidate[bg]['rd'] = readability.getmeasures(bg, lang='en')['readability grades']['FleschReadingEase']
     candidate[bg]['rp'] = representativeness(bg)
@@ -165,7 +172,7 @@ def generate_candidates(bg, rd_th, rp_th, clist):
                 cl.append(bg+' '+' '.join(i.split(' ')[1:]))
     
     for gram in cl:
-        generate_candidates(gram, 00,-1, clist)
+        generate_candidates(gram, 0.1,5, clist)
     
 
 
@@ -179,7 +186,6 @@ for k,v in candidate.items():
         a.append(h)
     
     cd[k] = sum(a)
-
 
 
 

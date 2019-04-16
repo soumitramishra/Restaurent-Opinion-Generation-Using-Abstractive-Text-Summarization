@@ -20,7 +20,7 @@ def encoder_decoder(data, en_shape, de_shape, hidden_units, learning_rate, clip_
     ''' encoder '''
     encoder_inputs = Input(shape=en_shape)
     
-    encoder_LSTM = LSTM(hidden_units, dropout_U = 0.02, dropout_W = 0.02 ,return_state=True)
+    encoder_LSTM = LSTM(hidden_units, dropout = 0.02 ,return_state=True)
     encoder_LSTM_rev=LSTM(hidden_units,return_state=True,go_backwards=True)
     
     encoder_outputsR, state_hR, state_cR = encoder_LSTM_rev(encoder_inputs)
@@ -106,10 +106,12 @@ data_categories=["training","validation","test"]
 filenames= ld.load_data(datasets['reviews'],data_categories[0])
 data = ld.make_data_dict(filenames,datasets,data_categories)
 corp = w2v.create_corpus(data)
-embed_model = w2v.word2vec_model(google = True)
-ohe, onehot_encoded,onehot = w2v.one_hot_encode(corpus = corp, vocab = embed_model.index2word)
+embed_model = w2v.word2vec_model(corpus = corp, loc = path+'\\train_w2v_embedding\\')
+ohe, onehot_encoded,onehot = w2v.one_hot_encode(corpus = corp, vocab = embed_model.wv.index2word)
 train_data = w2v.w2v_matrix(embed_model,data)
-train_data= w2v.cut_seq(train_data,10,5)
+
+
+train_data= w2v.cut_seq(train_data,1,5)
 train_data["summaries"]=np.array(train_data["summaries"])
 train_data["review"]=np.array(train_data["review"])
 train_data["summaries"]=np.array(list(map(w2v.addones,train_data["summaries"])))
@@ -118,16 +120,16 @@ train_data["summaries"]=np.array(list(map(w2v.addones,train_data["summaries"])))
 trained_model,encoder,decoder = encoder_decoder(data = train_data,
                 en_shape = train_data['review'][0].shape,
                 de_shape = train_data['summaries'][0].shape,
-                hidden_units = 500,
-                learning_rate = 0.005,
-                clip_norm = 0,
-                epochs = 10,
-                batch_size = 10)
+                hidden_units = 1500,
+                learning_rate = 0.05,
+                clip_norm = 2,
+                epochs = 20,
+                batch_size = 30)
 
 
-print(summarize(review = train_data["review"][4],
-                             en_shape = train_data['review'][4].shape,
-                             de_shape = train_data['summaries'][4].shape,
-                             max_len = 5,
+print(summarize(review = train_data["review"][1],
+                             en_shape = train_data['review'][5].shape,
+                             de_shape = train_data['summaries'][5].shape,
+                             max_len = 10,
                              encoder = encoder, 
                              decoder = decoder))
