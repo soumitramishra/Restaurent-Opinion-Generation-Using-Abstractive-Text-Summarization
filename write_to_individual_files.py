@@ -11,7 +11,7 @@ from nltk import sent_tokenize
 
 path = os.getcwd()
 
-combine_data = pd.read_csv('combined_data.txt')
+combine_data = pd.read_csv('data/combined_data.txt')
 bis_id = list(set(combine_data['business_id']))
 
 def write_to_file(i):
@@ -27,7 +27,7 @@ def write_to_file(i):
     text = ' '.join(max_sent)
     res_name = ''.join(set(dt['name']))+'_'+i
     
-    with open (path+'\\reviews\\'+res_name+'.txt','w',encoding = 'utf-8') as f:
+    with open (path+'\\data\\reviews\\'+res_name+'.txt','w',encoding = 'utf-8') as f:
             f.write(text)
     
     return('')
