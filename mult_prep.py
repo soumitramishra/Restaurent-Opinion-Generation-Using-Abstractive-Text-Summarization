@@ -20,13 +20,13 @@ def prep_json(file, t = 0):
     with ThreadPoolExecutor(max_workers=12) as executor:
              futures_list = [executor.submit(preprocess, line, t) for line in tqdm(open(file, encoding = 'utf-8'))]
              if t == 0:
-                 with open('processed_business.txt','w', newline = '', encoding = 'utf-8') as f:
+                 with open('data/processed_business.txt','w', newline = '', encoding = 'utf-8') as f:
                      for futures in tqdm(futures_list):
                          res = futures.result()
                          wr = csv.writer(f, quoting = csv.QUOTE_ALL)
                          wr.writerow(res)
              else:
-                 with open('processed_review.txt','w', newline = '', encoding = 'utf-8') as f:
+                 with open('data/processed_review.txt','w', newline = '', encoding = 'utf-8') as f:
                      for futures in tqdm(futures_list):
                          res = futures.result()
                          if len(res) == 3:
@@ -55,20 +55,20 @@ def preprocess(line, t = 0):
     return(df_l)
 
 
-prep_json('yelp_academic_dataset_business.json')
-data = pd.read_csv('processed_business.txt', names = ['business_id', 'name', 'review_count','categories'], sep = ',')
+prep_json('data/yelp_academic_dataset_business.json')
+data = pd.read_csv('data/processed_business.txt', names = ['business_id', 'name', 'review_count','categories'], sep = ',')
 
 ####### Get the list business id's that needs to be extracted ############
 new_rest = data[data['categories'].str.contains("Restaurants", na = False)]
 bis_id = list(set(new_rest['business_id']))
 
-prep_json('yelp_academic_dataset_review.json',1)
+prep_json('data/yelp_academic_dataset_review.json',1)
 
 ####### Get some summary statsitics of the review ###########
 new_data = pd.read_csv('processed_review.txt',names =['business_id', 'stars','useful','funny','cool', 'text'],sep=',')
 stats = new_data.groupby('business_id').agg('count')
-stats.to_csv('summary_stats.csv', encoding = 'utf-8')
+stats.to_csv('data/summary_stats.csv', encoding = 'utf-8')
 
 ###### Combine the reviews and the business ids and save ###########
 result = pd.merge(new_data,data[['business_id', 'name', 'categories']],on='business_id')
-result.to_csv('Combined_data.txt',encoding = 'utf-8')
+result.to_csv('data/Combined_data.txt',encoding = 'utf-8')

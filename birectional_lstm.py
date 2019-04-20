@@ -70,7 +70,7 @@ def encoder_decoder(data, en_shape, de_shape, hidden_units, learning_rate, clip_
     return model,encoder_model_inf,decoder_model_inf
 
 
-def summarize(review, en_shape, de_shape, encoder, decoder,max_len = 300):
+def summarize(review, en_shape, encoder, decoder,max_len = 300):
     stop_pred = False
     review =  np.reshape(review, (1, en_shape[0], en_shape[1]))
     
@@ -90,8 +90,10 @@ def summarize(review, en_shape, de_shape, encoder, decoder,max_len = 300):
     #sent_vecs = np.reshape(generated_summary, de_shape)
     summ = ''
     for k in generated_summary:
-       # summ = summ+((getWord(k)[0]+' ') if getWord(k)[1]>0.2 else '')
-       summ = summ + ohe.inverse_transform([np.argmax(k)])[0].strip()+" "
+        try:
+            summ = summ + ohe.inverse_transform([np.argmax(k)])[0].strip()+" "
+        except:
+            summ = summ +' UNK '
     
     return summ
 
@@ -128,8 +130,8 @@ trained_model,encoder,decoder = encoder_decoder(data = train_data,
 
 
 print(summarize(review = train_data["review"][1],
-                             en_shape = train_data['review'][5].shape,
-                             de_shape = train_data['summaries'][5].shape,
+                             en_shape = train_data['review'][1].shape,
+  #                           de_shape = train_data['summaries'][5].shape,
                              max_len = 10,
                              encoder = encoder, 
                              decoder = decoder))
