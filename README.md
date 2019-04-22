@@ -31,3 +31,7 @@ This file is used to train the word embedding model using our corpus. This file 
 
 unsupervised_summaries.py
 This file generates summaries in an unsupervised way. Choose any file you want to generate a summary of from the handwritten summaries folder and give the path (line 118). This gives an output of short summaries out of which you can pick the highest scored ones.
+
+
+bidirectional_lstm.py
+Is a self sustaining script till all the underlying script are in the working directory.
