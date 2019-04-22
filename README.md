@@ -35,3 +35,6 @@ This file generates summaries in an unsupervised way. Choose any file you want t
 
 bidirectional_lstm.py
 Is a self sustaining script till all the underlying script are in the working directory.
+
+Data link:
+https://drive.google.com/open?id=15tW9ZoX9M1wbu-wGW7DmIeF8Mc1QqesC
