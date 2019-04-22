@@ -7,6 +7,8 @@ import readability
 import string
 from tqdm import tqdm
 import itertools
+import glob
+
 
 def get_data(filename):
     '''Get data from file'''
@@ -117,17 +119,9 @@ def generate_seed_bigrams(unigrams):
 
 path = 'D:\\Northeastern_University\\CS6120\\Project\\preped'
 
-import glob
 files = glob.glob(path+'\\*')
 data = get_data(files[0])
-#ata = get_data("Rajkapuri's Paan & Snacks_gFUSJwVzEDERbaU9FVKfRA.txt")
 unig = generate_ngrams(data, 1)
-#uni_gram = Counter(unig).most_common(30)
-#x = {i[0]:i[1] for i in uni_gram}
-#bigrams = generate_seed_bigrams(x)
-#bigrams = [' '.join(tup) for tup in bigrams]
-#bigrams = Counter(bigrams)
-
 
 bigrams = generate_ngrams(data,2)
 uni = list(unig.keys())
@@ -147,20 +141,21 @@ def forallseeds(bigrams):
     top500 = bigrams.most_common(500)
     clist = [i[0] for i in top500]
     for bg in tqdm(clist):
-        generate_candidates(bg,0.1,5,clist)
+        generate_candidates(bg,0.1,0,clist)
     
     return 
 
-def generate_candidates(bg, rd_th, rp_th, clist):
+def generate_candidates(bg, rd_th, rp_th, clist, max_len = 10):
     '''
     recurse me baby
     '''
     candidate[bg] = {'rd':0, 'rp':0}
-    candidate[bg]['rd'] = readability.getmeasures(bg, lang='en')['readability grades']['FleschReadingEase']
-    candidate[bg]['rp'] = representativeness(bg)
+    if len(bg.split(' ')) > 1:
+        candidate[bg]['rd'] = readability.getmeasures(bg, lang='en')['readability grades']['FleschReadingEase']
+        candidate[bg]['rp'] = representativeness(bg)
     gen_list = [i for i in clist]
     
-    if candidate[bg]['rd'] < rd_th or candidate[bg]['rp'] < rp_th:
+    if candidate[bg]['rd'] < rd_th or candidate[bg]['rp'] < rp_th or len(bg.split(' ')) > max_len:
         return
     else:
         cl = []
@@ -172,7 +167,7 @@ def generate_candidates(bg, rd_th, rp_th, clist):
                 cl.append(bg+' '+' '.join(i.split(' ')[1:]))
     
     for gram in cl:
-        generate_candidates(gram, 0.1,5, clist)
+        generate_candidates(gram, 0.1,0, clist)
     
 
 
@@ -184,8 +179,12 @@ for k,v in candidate.items():
     a = []
     for g,h in v.items():
         a.append(h)
-    
     cd[k] = sum(a)
+
+n= {}
+for k, v in cd.items():
+    if len(k.split(' ')) > 8:
+        n[k] = v
 
 
 

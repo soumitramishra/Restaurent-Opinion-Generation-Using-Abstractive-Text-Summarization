@@ -18,8 +18,8 @@ def create_corpus(data):
     words = [word_tokenize(s) for s in sents]
     return words
 
-def word2vec_model(corpus='', emb_size=300, window=5, workers=5, 
-                   batch_words=50, epochs=30, min_count=1, loc='', google = False):
+def word2vec_model(corpus='', emb_size=300, window=4, workers=5, 
+                   batch_words=16, epochs=100, min_count=7, loc='', google = False):
     ''' train word2vec model for embeddings and save model '''
     if google:
         print('Loading Google stuff....')
@@ -84,8 +84,9 @@ def w2v_matrix(model, data, google = False):
         r = [model[w] for w in word_tokenize(data['review'][i]) if w in vocab]
         dat['review'].append(r)
         
-        s = [model[w] for w in word_tokenize(data['summaries'][i]) if w in vocab]
-        dat['summaries'].append(s)
+        if data['summaries']:
+            s = [model[w] for w in word_tokenize(data['summaries'][i]) if w in vocab]
+            dat['summaries'].append(s)
     
     print('Word Vector created...')
     return dat
@@ -94,11 +95,17 @@ def cut_seq(data, review_len, summary_len):
     ''' limit sequence length of the summaries and reviews '''
     dat = {'review':[],'summaries':[]}
     for k in range(len(data['review'])):
-        if len(data['review'][k]) < review_len or len(data['summaries'][k]) < summary_len:
-             pass
+        if data['summaries']:
+            if len(data['review'][k]) < review_len or len(data['summaries'][k]) < summary_len:
+                pass
+            else:
+                dat["review"].append(data["review"][k][:review_len])
+                if data['summaries']:
+                    dat["summaries"].append(data["summaries"][k][:summary_len])
         else:
             dat["review"].append(data["review"][k][:review_len])
-            dat["summaries"].append(data["summaries"][k][:summary_len])
+            if data['summaries']:
+                dat["summaries"].append(data["summaries"][k][:summary_len])
     return dat
 
 def addones(seq):
