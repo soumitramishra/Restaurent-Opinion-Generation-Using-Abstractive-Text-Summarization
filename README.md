@@ -29,10 +29,5 @@ This file is used to clean the data of every file and generate the cleaned featu
 w2v_features.py
 This file is used to train the word embedding model using our corpus. This file runs part of the script file birectional_lstm.py
 
-
-
-
-
-
-Model 1:
-To run the model 1 
+unsupervised_summaries.py
+This file generates summaries in an unsupervised way. Choose any file you want to generate a summary of from the handwritten summaries folder and give the path (line 118). This gives an output of short summaries out of which you can pick the highest scored ones.
