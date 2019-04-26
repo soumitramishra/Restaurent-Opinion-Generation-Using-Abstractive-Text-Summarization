@@ -11,7 +11,7 @@ from nltk import sent_tokenize
 
 path = os.getcwd()
 
-combine_data = pd.read_csv('data/combined_data.txt')
+combine_data = pd.read_csv('data/Combined_data.txt')
 bis_id = list(set(combine_data['business_id']))
 
 def write_to_file(i):

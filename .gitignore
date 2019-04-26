@@ -1,2 +1,9 @@
 
 GoogleNews-vectors-negative300.bin
+*.txt
+*.csv
+*.json
+*.hdf5
+train_w2v_embedding/Word2Vec
+*.h5
+*.pkl
